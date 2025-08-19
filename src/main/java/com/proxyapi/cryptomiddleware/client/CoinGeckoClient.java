@@ -33,6 +33,7 @@ public class CoinGeckoClient {
                 result.put(crypto, priceData.get("usd"));
             });
         }
+        System.out.println("Llamando a CoinGecko API...");
 
         return result;
     }
