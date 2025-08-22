@@ -34,6 +34,7 @@ GET /api/prices
     "usd": 3275.45
   }
 }
+```
 If the CoinGecko API is unavailable or rate-limited, the service will return the last cached values.
 
 ⚙️ Running Locally
