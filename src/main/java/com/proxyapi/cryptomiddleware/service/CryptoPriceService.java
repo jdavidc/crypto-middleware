@@ -6,15 +6,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 public class CryptoPriceService {
 
     private final WebClient webClient;
-    private final Map<String, Double> cache = new ConcurrentHashMap<>();
+
+    // Cache: crypto -> { fiat -> price }
+    private final Map<String, Map<String, Double>> cache = new ConcurrentHashMap<>();
 
     public CryptoPriceService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder
@@ -22,40 +25,49 @@ public class CryptoPriceService {
                 .build();
     }
 
-    public Map<String, Double> getPrices() {
-        // 👇 si no hay nada en cache, devolvemos vacío en vez de romper
-        return cache.isEmpty() ? Map.of("bitcoin", 0.0, "ethereum", 0.0) : cache;
-    }
-
-    // 👇 este método se ejecuta automáticamente cada 2 minutos
-    @Scheduled(fixedRate = 120000) // 2 minutos
-    public void refreshPrices() {
+    /**
+     * ✅ Método principal: obtiene precios de múltiples cryptos y divisas.
+     * Si falla, devuelve cache.
+     */
+    public Map<String, Object> getPrices(String ids, String vsCurrencies) {
         try {
             Map<String, Map<String, Double>> response =
                     webClient.get()
                             .uri(uriBuilder -> uriBuilder
                                     .path("/simple/price")
-                                    .queryParam("ids", "bitcoin,ethereum")
-                                    .queryParam("vs_currencies", "usd")
+                                    .queryParam("ids", ids)
+                                    .queryParam("vs_currencies", vsCurrencies)
                                     .build())
                             .retrieve()
                             .bodyToMono(new ParameterizedTypeReference<Map<String, Map<String, Double>>>() {})
                             .block();
 
-            if (response != null) {
-                Map<String, Double> newPrices = response.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get("usd")));
-
+            if (response != null && !response.isEmpty()) {
+                // Actualizamos cache con último request válido
                 cache.clear();
-                cache.putAll(newPrices);
-
-                System.out.println("Precios actualizados: " + cache);
+                cache.putAll(response);
             }
+
         } catch (WebClientResponseException.TooManyRequests e) {
-            System.out.println("API limit reached (429). Manteniendo datos en cache.");
+            System.out.println("⚠️ API limit reached (429). Returning cached data.");
         } catch (Exception e) {
-            System.out.println("Error al actualizar precios: " + e.getMessage());
+            System.out.println("⚠️ Error fetching prices: " + e.getMessage());
         }
+
+        // Armamos respuesta enriquecida
+        Map<String, Object> enrichedResponse = new LinkedHashMap<>();
+        enrichedResponse.put("timestamp", Instant.now().toString());
+        enrichedResponse.put("source", "CoinGecko");
+        enrichedResponse.put("prices", cache.isEmpty() ? Map.of() : cache);
+
+        return enrichedResponse;
+    }
+
+    /**
+     * ✅ Auto-refresh de cache cada 2 minutos (solo BTC y ETH en USD por defecto).
+     */
+    @Scheduled(fixedRate = 120000) // 2 min
+    public void refreshPrices() {
+        getPrices("bitcoin,ethereum", "usd");
     }
 }
-
