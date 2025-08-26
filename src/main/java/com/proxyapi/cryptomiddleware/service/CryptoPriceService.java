@@ -1,5 +1,6 @@
 package com.proxyapi.cryptomiddleware.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,10 @@ public class CryptoPriceService {
     // Cache: crypto -> { fiat -> price }
     private final Map<String, Map<String, Double>> cache = new ConcurrentHashMap<>();
 
-    public CryptoPriceService(WebClient.Builder webClientBuilder) {
+    public CryptoPriceService(WebClient.Builder webClientBuilder,
+                              @Value("${crypto.api.base-url:https://api.coingecko.com/api/v3}") String baseUrl) {
         this.webClient = webClientBuilder
-                .baseUrl("https://api.coingecko.com/api/v3")
+                .baseUrl(baseUrl)
                 .build();
     }
 
