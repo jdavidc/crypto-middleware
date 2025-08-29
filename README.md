@@ -1,82 +1,121 @@
-# Crypto Price Proxy Middleware
+# Crypto Middleware Service
 
-A simple backend service built with **Spring Boot** that acts as a middleware (proxy) for fetching cryptocurrency prices from the [CoinGecko API](https://www.coingecko.com/).  
-It provides a stable API for clients by caching data and handling rate limits gracefully.
+A robust, production-ready backend service built with **Spring Boot** that provides a unified API for cryptocurrency data. This middleware service acts as a proxy between clients and external cryptocurrency APIs, offering enhanced reliability, caching, and additional features.
 
 ## ✨ Features
 
-- Fetches live prices for **Bitcoin** and **Ethereum** in USD.
-- Uses **Caffeine Cache** to store the latest prices.
-- Scheduled background refresh every 2 minutes.
-- Serves cached data to avoid CoinGecko's `429 Too Many Requests` errors.
-- REST endpoint ready to be consumed by web or mobile apps.
-- Lightweight and deployable to free hosting platforms.
+- **Multi-Exchange Support**: Fetches cryptocurrency prices from multiple sources
+- **Intelligent Caching**: Implements Spring Cache with Caffeine for high-performance data access
+- **Resilient Design**: Built with resilience patterns to handle external API failures
+- **Reactive Programming**: Uses Spring WebFlux for non-blocking, reactive data processing
+- **Comprehensive API**: Well-documented REST endpoints with OpenAPI/Swagger UI
+- **Monitoring**: Integrated with Spring Boot Actuator for health checks and metrics
+- **Security**: API key authentication for secure access
+- **Container Ready**: Docker support for easy deployment
 
 ## 🚀 Tech Stack
 
-- **Java 21+**
-- **Spring Boot 3**
-- **Spring WebFlux** (WebClient)
-- **Caffeine Cache**
-- **Gradle**
+- **Java 21**
+- **Spring Boot 3.2+**
+- **Spring WebFlux** (Reactive)
+- **Spring Cache** with **Caffeine**
+- **Spring Doc OpenAPI**
+- **Spring Boot Actuator**
+- **Gradle 8.0+**
+- **Docker**
 
-## 📡 API Endpoints
+## 📡 API Documentation
 
-### Get current crypto prices
-```http
-GET /api/prices
-#### Response example:
-{
-  "bitcoin": {
-    "usd": 64235.12
-  },
-  "ethereum": {
-    "usd": 3275.45
-  }
-}
+Interactive API documentation is available at:
 ```
-If the CoinGecko API is unavailable or rate-limited, the service will return the last cached values.
+http://localhost:8080/swagger-ui.html
+```
 
-⚙️ Running Locally
-Prerequisites
+### Available Endpoints
 
-Java 21+ installed
+#### Get Current Prices
+```http
+GET /api/v1/prices
+```
 
-Gradle (or use the included ./gradlew script)
+#### Get Price History
+```http
+GET /api/v1/prices/history/{cryptoId}
+```
 
-Steps
-# Clone the repository
-git clone https://github.com/your-username/crypto-price-proxy.git
-cd crypto-price-proxy
+#### Get Market Data
+```http
+GET /api/v1/market/{cryptoId}
+```
 
-# Build the project
-./gradlew build
+## 🚀 Getting Started
 
-# Run the app
-./gradlew bootRun
+### Prerequisites
 
+- Java 21 or later
+- Gradle 8.0 or later (or use the included `gradlew` script)
+- Docker (optional, for containerized deployment)
 
-The app will be available at:
-👉 http://localhost:8080/api/prices
+### Local Development
 
-☁️ Deployment
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/crypto-middleware.git
+   cd crypto-middleware
+   ```
 
-This project can be deployed to free hosting services such as:
+2. **Build the project**
+   ```bash
+   ./gradlew build
+   ```
 
-Render
+3. **Run the application**
+   ```bash
+   ./gradlew bootRun
+   ```
 
-Railway
+The application will be available at: [http://localhost:8080](http://localhost:8080)
 
-Fly.io
+## 🐳 Docker Support
 
-Simply build the JAR and deploy it with your preferred service.
+Build and run the application using Docker:
 
-📖 Next Steps / Ideas
+```bash
+# Build the Docker image
+docker build -t crypto-middleware .
 
-Add support for more cryptocurrencies.
+# Run the container
+docker run -p 8080:8080 crypto-middleware
+```
 
-Allow dynamic selection of fiat currencies (e.g., EUR, GBP).
+## ☁️ Deployment
 
-Implement API key support for controlled access.
+This application is container-ready and can be deployed to any cloud platform that supports Docker or Java applications, including:
 
-Add Dockerfile for containerized deployments.
+- AWS ECS/EKS
+- Google Cloud Run
+- Azure Container Apps
+- Heroku
+- Render
+- Railway
+- Fly.io
+
+## 🔒 Security
+
+API key authentication is required for all endpoints. Include your API key in the `X-API-KEY` header with each request.
+
+## 📊 Monitoring
+
+Application metrics and health checks are available at:
+```
+http://localhost:8080/actuator/health
+http://localhost:8080/actuator/metrics
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
