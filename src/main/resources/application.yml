@@ -1,6 +1,13 @@
 server:
   port: ${PORT:8080}  # Render define PORT, si no está usa 8080 local
 
+
+
 spring:
   application:
     name: crypto-middleware
+
+# API Configuration
+api:
+  version: v1
+  version-path: /api/v1

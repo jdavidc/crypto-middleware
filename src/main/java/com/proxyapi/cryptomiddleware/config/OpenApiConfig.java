@@ -1,5 +1,7 @@
 package com.proxyapi.cryptomiddleware.config;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -7,6 +9,16 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Crypto Middleware API",
+                version = "1.0.0",
+                description = "API for cryptocurrency data with versioning support"
+        ),
+        servers = {
+                @Server(url = "/api/v1", description = "API Version 1")
+        }
+)
 @Configuration
 public class OpenApiConfig {
 

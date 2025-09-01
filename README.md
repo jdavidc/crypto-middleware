@@ -24,28 +24,29 @@ A robust, production-ready backend service built with **Spring Boot** that provi
 - **Gradle 8.0+**
 - **Docker**
 
-## 📡 API Documentation
+## API Documentation
 
-Interactive API documentation is available at:
-```
-http://localhost:8080/swagger-ui.html
-```
+The API is versioned using URL path versioning. The current version is v1.
+
+- Base URL: `/api/v1`
+- Swagger UI: `/swagger-ui.html`
+- OpenAPI JSON: `/v3/api-docs`
 
 ### Available Endpoints
 
 #### Get Current Prices
 ```http
-GET /api/v1/prices
+GET /api/v1/crypto/prices
 ```
 
 #### Get Price History
 ```http
-GET /api/v1/prices/history/{cryptoId}
+GET /api/v1/crypto/prices/history/{cryptoId}
 ```
 
 #### Get Market Data
 ```http
-GET /api/v1/market/{cryptoId}
+GET /api/v1/crypto/market/{cryptoId}
 ```
 
 ## 🚀 Getting Started
