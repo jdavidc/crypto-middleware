@@ -18,3 +18,15 @@ spring:
       connectionfactory:
         max-pool-size: 10
         min-pool-size: 3
+  cloud:
+    gateway:
+      routes:
+        - id: crypto-service
+          uri: lb://crypto-service
+          predicates:
+            - Path=/api/v1/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
